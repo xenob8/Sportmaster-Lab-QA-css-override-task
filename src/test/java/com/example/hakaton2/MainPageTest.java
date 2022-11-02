@@ -1,10 +1,9 @@
 package com.example.hakaton2;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -14,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MainPageTest {
     private WebDriver driver;
@@ -32,10 +33,13 @@ public class MainPageTest {
 
     @Test
     void foo() {
-        driver.get("file:///C:/Users/Sergey/WebstormProjects/QA_hakaton/index.html");
+        driver.get(Dotenv.load().get("WEBSITE_URL"));
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        String str = (String) js.executeScript(script);
-        System.out.println(str);
+        assertDoesNotThrow(() -> {
+            String str = (String) js.executeScript(script);
+            System.out.println(str);
+            assertFalse(str.contains("color changed"));
+        });
     }
 
     @AfterEach

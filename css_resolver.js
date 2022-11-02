@@ -2,6 +2,10 @@ function foo() {
     let output = "";
     let styles = Array.from(document.styleSheets);
     let index = styles.findIndex((el) => el.href.includes("headers.css"));
+    if (index === -1){
+        throw "no headers.css file"
+    }
+
     styles.forEach(el => el.disabled = true);
 
     styles[index].disabled = false;
