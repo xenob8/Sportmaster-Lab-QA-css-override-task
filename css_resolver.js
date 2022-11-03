@@ -1,4 +1,4 @@
-function foo() {
+function checkOverrides() {
     let output = "";
     let styles = Array.from(document.styleSheets);
     let index = styles.findIndex((el) => el.href.includes("headers.css"));

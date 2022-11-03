@@ -2,8 +2,9 @@ package com.example.hakaton2;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.*;
-import org.openqa.selenium.JavascriptException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -14,14 +15,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class MainPageTest {
     private WebDriver driver;
-    private final File file = new File("css_resolver.js").getAbsoluteFile();
-    private final String script = "return foo();\n" + FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+    private final String script;
+    private final String url = URLProvider.getUrl(Dotenv.load().get("WEBSITE_URL"));
 
     public MainPageTest() throws IOException {
+        File jsScript = new File("css_resolver.js").getAbsoluteFile();
+        script = "return checkOverrides();\n" + FileUtils.readFileToString(jsScript, StandardCharsets.UTF_8);
     }
 
     @BeforeEach
@@ -32,13 +36,13 @@ public class MainPageTest {
     }
 
     @Test
-    void foo() {
-        driver.get(Dotenv.load().get("WEBSITE_URL"));
+    void checkCSSOverriding() {
+        driver.get(url);
         JavascriptExecutor js = (JavascriptExecutor) driver;
         assertDoesNotThrow(() -> {
-            String str = (String) js.executeScript(script);
-            System.out.println(str);
-            assertFalse(str.contains("color changed"));
+            String output = (String) js.executeScript(script);
+            System.out.println(output);
+            assertFalse(output.contains("color changed"));
         });
     }
 
@@ -46,6 +50,7 @@ public class MainPageTest {
     public void close() {
         driver.quit();
     }
+
 }
 
 
